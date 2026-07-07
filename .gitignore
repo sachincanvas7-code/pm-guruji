@@ -1,0 +1,11 @@
+# secrets — NEVER commit real keys
+.env
+
+# python virtual environment (rebuildable, huge)
+.venv/
+__pycache__/
+*.pyc
+
+# local audio + downloaded models (bulky, rebuildable)
+test_audio/
+*.pt
