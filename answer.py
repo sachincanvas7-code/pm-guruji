@@ -25,11 +25,13 @@ def answer(question, top_k=5):
     qvec = model.encode(question).tolist()
     results = index.query(vector=qvec, top_k=top_k, include_metadata=True)
 
-    # 2. build the context block from retrieved chunks
+    # 2. build the context block from retrieved chunks, and collect sources
     context = ""
+    sources = []
     for m in results["matches"]:
         md = m["metadata"]
         context += f"[Source: {md['title']}]\n{md['text']}\n\n"
+        sources.append({"title": md["title"], "score": m["score"], "text": md["text"]})
 
     # 3. ask Groq to answer using ONLY that context
     response = groq_client.chat.completions.create(
@@ -39,10 +41,10 @@ def answer(question, top_k=5):
             {"role": "user", "content": f"Context:\n{context}\n\nQuestion: {question}"},
         ],
     )
-    return response.choices[0].message.content
+    return {"text": response.choices[0].message.content, "sources": sources}
 
 
 if __name__ == "__main__":
     q = "why did uber rides drop, and how was that concluded?"
     print(f"Q: {q}\n")
-    print("A:", answer(q))
+    print("A:", answer(q)["text"])
