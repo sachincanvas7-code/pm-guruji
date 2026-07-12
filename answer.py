@@ -1,10 +1,12 @@
 import os
-from dotenv import load_dotenv
+try:
+    from dotenv import load_dotenv
+    load_dotenv()
+except ImportError:
+    pass
 from sentence_transformers import SentenceTransformer
 from pinecone import Pinecone
 from groq import Groq
-
-load_dotenv()
 
 model = SentenceTransformer("all-MiniLM-L6-v2")
 pc = Pinecone(api_key=os.getenv("PINECONE_API_KEY"))
